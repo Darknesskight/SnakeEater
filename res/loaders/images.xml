@@ -1,0 +1,5 @@
+<resources>
+	<resource key="splash" location="res/images/splash.png" />
+	<resource key="debugGrid" location="res/images/debugGrid.png" />
+	<resource key="block" location="res/images/entities/block/block.png" />
+</resources>

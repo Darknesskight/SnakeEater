@@ -1,0 +1,10 @@
+<resources>
+	<resource key="playerWalkRight" location="res/images/entities/player/ballRightTestFinal.png" tileWidth="10" tileHeight="10" animationSpeed="60" />
+	<resource key="playerWalkLeft" location="res/images/entities/player/ballRightTestFinal.png" tileWidth="10" tileHeight="10" animationSpeed="60" flip="true" />
+	<resource key="playerWalkUp" location="res/images/entities/player/ballBackTestFinal.png" tileWidth="10" tileHeight="10" animationSpeed="60" />
+	<resource key="playerWalkDown" location="res/images/entities/player/ballTestFinal.png" tileWidth="10" tileHeight="10" animationSpeed="60" />
+	<resource key="block" location="res/images/entities/block/block.png" tileWidth="16" tileHeight="16" animationSpeed="1000" />
+	<resource key="snake" location="res/images/entities/snake/snakeFinal.png" tileWidth="16" tileHeight="16" animationSpeed="1000" />
+	<resource key="snakeFront" location="res/images/entities/snake/snakeFrontFinal.png" tileWidth="16" tileHeight="16" animationSpeed="1000" />
+	<resource key="snakeLeft" location="res/images/entities/snake/snakeLeftFinal.png" tileWidth="16" tileHeight="16" animationSpeed="1000" />
+</resources>

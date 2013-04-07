@@ -1,0 +1,4 @@
+<resources>
+	<resource key="bossTest" location="res/maps/bossTest.tmx" />>
+	<resource key="testMap" location="res/maps/testMap.tmx" />>
+</resources>

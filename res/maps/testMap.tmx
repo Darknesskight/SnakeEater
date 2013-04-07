@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="50" height="50" tilewidth="8" tileheight="8">
+ <tileset firstgid="1" name="grass" tilewidth="8" tileheight="8">
+  <image source="../tilesets/grass.png" width="8" height="8"/>
+ </tileset>
+ <tileset firstgid="2" name="ground" tilewidth="8" tileheight="8">
+  <image source="../tilesets/ground.png" width="8" height="8"/>
+ </tileset>
+ <tileset firstgid="3" name="fence" tilewidth="8" tileheight="8">
+  <image source="../tilesets/fence.png" trans="ffffff" width="8" height="8"/>
+ </tileset>
+ <tileset firstgid="4" name="fence" tilewidth="8" tileheight="8">
+  <image source="../tilesets/fence.png" trans="ffffff" width="8" height="8"/>
+ </tileset>
+ <tileset firstgid="5" name="red" tilewidth="8" tileheight="8">
+  <image source="../tilesets/red.png" width="8" height="8"/>
+  <tile id="0">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="6" name="tree" tilewidth="8" tileheight="8">
+  <image source="../tilesets/tree.png" trans="ffffff" width="16" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="solid" value="false"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="solid" value="false"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="14" name="path" tilewidth="8" tileheight="8">
+  <image source="../tilesets/path.png" width="24" height="24"/>
+ </tileset>
+ <layer name="Collisions" width="50" height="50">
+  <properties>
+   <property name="collisionMask" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzzENADAMwLA+4095JHZklS0FQGbgvbOo3/lo8dHio8VHi48WHy0+Wny0+Gjx0eKjxUeLjxYfLT5afLT4aPHR4qNl28eGgP0um4EDhQ==
+  </data>
+ </layer>
+ <layer name="Tile Layer 1" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwwEJAAAMBKH7/qWXY6DgqqmqqqqqqqqqqurzBwHpCcU=
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt2tEFADAQRMEjBYSQ/ltNBSEf4VgzvCp2q+C/ERIAACSbIS1J13ZIAAAAQL/u/d4PAHh1ANxlFkU=
+  </data>
+ </layer>
+ <layer name="trees" width="50" height="50">
+  <properties>
+   <property name="collisionMask" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt2MEOgjAQhGFOqKjv/7r2YsKhG7vTIS34f0lvbXYpYZJlWQCgbi3rdoHa97IeB/cS7emtvbeV9WysW9PSS7SnVjvyq6dXWW+ht0wv0Z5a7Yjy7jL31NJLpt9IpidnXbcZezqLkVnu5MzTkZRvckZ8kwAAAPj6x5nD+czu+8vMHM45yz2zZWYO55w1cmZzzlnMbNeg5MOMmazkg3Lm6GdX8kE505OnLXeg5INypidPZ/oP2JOn/AcEAGCsD+23BCk=
+  </data>
+ </layer>
+</map>
