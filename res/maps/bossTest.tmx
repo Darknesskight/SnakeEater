@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="20" height="20" tilewidth="8" tileheight="8">
+<map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="8" tileheight="8">
  <tileset firstgid="1" name="block" tilewidth="8" tileheight="8">
   <image source="../tilesets/block.png" width="16" height="16"/>
  </tileset>
@@ -22,25 +22,25 @@
    </properties>
   </tile>
  </tileset>
- <layer name="Collisions" width="20" height="20">
+ <layer name="Collisions" width="40" height="40">
   <properties>
    <property name="collisionMask" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjZWBgYKUyphagtXn8aPKk8oeaf6lt3mj4UWbeaPhRZt5o+JFnHjUxAMRhAm0=
+   eJzt0jEKACAQA8FrrP3/b+2tA3sLCViIzSJzZuYsP1tn67vfO323/d+22fpob/WXna2P9lZ/2dn6aG/1l52tj/ZWf9nZ+mhv9ZedrY/2Vn/Z2fpob/WXna2P9lZ/2Vn6Np8HHREHzA==
   </data>
  </layer>
- <layer name="walls" width="20" height="20" visible="0">
+ <layer name="walls" width="40" height="40" visible="0">
   <data encoding="base64" compression="zlib">
-   eJxjY2BgYKcS5gBiTiDmohLmHjVv1LxR80bNGzWPaubxADEvlTAfEAMAkhEPoQ==
+   eJztzrERgDAMBDBXIYGE/cfFYzx3KtRrVNUVarbV7lCPn5+fn18kPz8/P79Mfn5+fn6Z/Pz8/Pwy/eG32wn1tg99vj6B
   </data>
  </layer>
- <layer name="Tile Layer 2" width="20" height="20" visible="0">
+ <layer name="Tile Layer 2" width="40" height="40" visible="0">
   <properties>
    <property name="collisionMask" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjIJRMApIBwAGQAAB
+   eJztwQENAAAAwqD3T20PBxQAAAAAAMCXARkAAAE=
   </data>
  </layer>
 </map>

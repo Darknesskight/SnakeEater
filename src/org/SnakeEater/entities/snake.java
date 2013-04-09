@@ -1,6 +1,7 @@
 package org.SnakeEater.entities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -24,11 +25,19 @@ public class snake extends MoveableEntity{
 	//Stack containing the animations being used by the player. Only the top of the stack will render
     private Stack<Animation> animationStack = new Stack<Animation>();
     
+    private List<String> movementDecider = new ArrayList<String>();
+    
     //ResourceManager context
     private ResourceManager rm;
     
     //StateBasedGame context
     private StateBasedGame game;
+    
+    boolean timeToGrow=false;
+    
+    
+  //StateBasedGame context
+    private int lastPlaceChecked;
     
     //Snake Tail
     private snakeTail[] tail;
@@ -44,6 +53,7 @@ public class snake extends MoveableEntity{
 		nextStep = new SmRectangle(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
 		dir = "left";
 		movementSteps = 0;
+		name="snakeHead";
 	}
 	@Override
     public void init(GameContainer gc, StateBasedGame game) {
@@ -57,8 +67,8 @@ public class snake extends MoveableEntity{
 	@Override
 	public void setupAnimations(StateBasedGame game) {
 		//Set and load player's static 'animation'
-		 tail = new snakeTail[4];
-			for(int i =0; i<4; i++){
+		 tail = new snakeTail[2];
+			for(int i =0; i<tail.length; i++){
 				tail[i] = new snakeTail(new SmRectangle((shape.getX()+(16*(i+1))), shape.getY(), 16, 16));
 				((MainState)game.getCurrentState()).addEntity(tail[i]);
 				
@@ -71,7 +81,7 @@ public class snake extends MoveableEntity{
         ((Game) game).getResourceManager().load("snakeRight", AnimationUtils.returnFlippedAnimation(new Animation(snake2, 6)));
         ((Game) game).getResourceManager().load("snakeFront", new Animation(snake3, 6));
         animationStack.push(((Game) game).getResourceManager().getAnimation("snakeLeft"));
-		for(int i =0; i<4; i++){
+		for(int i =0; i<tail.length; i++){
 			tail[i].animationStack.push(((Game) game).getResourceManager().getAnimation("snake"));
 			((MainState)game.getCurrentState()).addEntity(tail[i]);
 		}
@@ -81,13 +91,14 @@ public class snake extends MoveableEntity{
 	public void update(GameContainer gc, StateBasedGame game, int delta) {
 		super.update(gc, game, delta);
 		if(movementSteps%8 == 0){
+			checkPellet();
 			if(movementSteps!=0){
-				for(int i =3; i>0; i--){
+				for(int i =tail.length-1; i>0; i--){
 					tail[i].dir=tail[i-1].dir;
 				}
 				tail[0].dir = dir;
 			}
-			getMovement();
+			lookAhead(10, shape, dir);
 			
 		}
 		else{
@@ -101,132 +112,241 @@ public class snake extends MoveableEntity{
 			if(dir.equals("down")) animationStack.set(0, rm.getAnimation("snakeFront"));
 		}
 	}
+
+	private void checkPellet() {
+		for(Entity b : ((MainState)game.getCurrentState()).getEntity()) {
+			if(b.name == "pellet"){
+				if(shape.intersects(b.getShape())) {
+					timeToGrow = true;
+					b.collidingAction(2, "");
+				}
+			}
+		}
+	}
+		
+	@Override
+	public void render(GameContainer gc, StateBasedGame game, Graphics g) {
+		super.render(gc, game, g);
+		
+		if(timeToGrow){
+			timeToGrow = false;
+			grow();
+		}
+		
+		if(animationStack.empty())
+			this.setupAnimations(game);
+		for(int i =0; i<tail.length; i++){
+			tail[i].render(gc, game, g);
+		}
+		//g.drawImage(((Game) game).getResourceManager().getImage("player"), shape.getX(), shape.getY());
+		g.drawAnimation(animationStack.peek(), shape.getX() - ((animationStack.peek().getWidth() - shape.getWidth())/2), shape.getY());
+		if(((Game) game).isDebug()) {
+			g.setColor(new Color(0, 125, 125, 128));
+			g.fillRect(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight());
+			g.setColor(Color.cyan);
+			g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
+			g.setColor(Color.orange);
+			g.fillRect(collidingBlock.getShape().getX(), collidingBlock.getShape().getY(), collidingBlock.getShape().getWidth(), collidingBlock.getShape().getHeight());
+		}
+	}
+	@Override
+	public int getRenderPriority() {
+		 return 1000;
+	 }
+	
+	private void grow() {
+		snakeTail[] newTail = new snakeTail[tail.length+1];
+		for(int i=0; i<tail.length; i++){
+			newTail[i] = tail[i];
+		}
+		newTail[tail.length] = tail[tail.length-1].clone();
+		tail = newTail;
+	}
+	private void lookAhead(int spacesToCheck, Shape shape, String dir){
+		lastPlaceChecked = spacesToCheck+1;
+		List<Shape> tails = new ArrayList<Shape>();
+		movementDecider.clear();
+		for(int i =tail.length-1; i>=0; i--){
+			tails.add(tail[i].shape);
+		}
+		tails.add(shape);
+		tails.remove(0);
+		if(dir != "left"){
+			nextStep.setY(
+					shape.getY());
+			nextStep.setX(shape.getX() + 16);
+			
+			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this, tails)){
+				if(lastPlaceChecked > spacesToCheck){
+					lastPlaceChecked = spacesToCheck;
+					movementDecider.clear();
+					movementDecider.add("right");
+				}
+				else if(lastPlaceChecked == spacesToCheck){
+					movementDecider.add("right");
+				}
+				lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "right", "right", tails.subList(0, tails.size()));
+				//directions.add("right");
+			}
+		}
+		if(dir != "right"){
+			nextStep.setY(
+					shape.getY());
+			nextStep.setX(shape.getX() - 16);
+			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this, tails)){
+				if(lastPlaceChecked > spacesToCheck){
+					lastPlaceChecked = spacesToCheck;
+					movementDecider.clear();
+					movementDecider.add("left");
+				}
+				else if(lastPlaceChecked == spacesToCheck){
+					movementDecider.add("left");
+				}
+				lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "left", "left", tails.subList(0, tails.size()));
+				//directions.add("left");
+			}
+		}	
+		if(dir != "up"){
+			nextStep.setY(
+					shape.getY() + 16);
+			nextStep.setX(shape.getX());
+			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this, tails)){
+				if(lastPlaceChecked > spacesToCheck){
+					lastPlaceChecked = spacesToCheck;
+					movementDecider.clear();
+					movementDecider.add("down");
+				}
+				else if(lastPlaceChecked == spacesToCheck){
+					movementDecider.add("down");
+				}
+				lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "down", "down", tails.subList(0, tails.size()));
+				//directions.add("down");
+			}
+		}
+		if(dir != "down"){
+			nextStep.setY(
+					shape.getY() - 16);
+			nextStep.setX(shape.getX());
+			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this, tails)){
+				if(lastPlaceChecked > spacesToCheck){
+					lastPlaceChecked = spacesToCheck;
+					movementDecider.clear();
+					movementDecider.add("up");
+				}
+				else if(lastPlaceChecked == spacesToCheck){
+					movementDecider.add("up");
+				}
+				lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "up", "up", tails.subList(0, tails.size()));
+				//directions.add("up");
+			}
+		}
+		if(movementDecider.size() == 0){
+				movementSteps = 0;
+		}
+		else{
+			//System.out.println();
+			moveSnake(movementDecider.get(rand.nextInt(movementDecider.size())));
+		}
+	}
+
+	private void lookAheadRec(int spacesToCheck, Shape shape, String dir, String Original, List<Shape> tailOld){
+		////System.out.println(ignore);
+		List<Shape> tails = new ArrayList<Shape>();
+		for(int i =0; i<tailOld.size(); i++){
+			tails.add(new SmRectangle(tailOld.get(i).getX(), tailOld.get(i).getY(), 16, 16));
+		}
+		tails.add(shape);
+		tails.remove(0);
+		if(spacesToCheck>0){
+			if(dir != "left"){
+				nextStep.setY(
+						shape.getY());
+				nextStep.setX(shape.getX() + 16);
+				if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(shape, nextStep), this, tails)){
+					if(lastPlaceChecked > spacesToCheck){
+						lastPlaceChecked = spacesToCheck;
+						movementDecider.clear();
+						movementDecider.add(Original);
+					}
+					else if(lastPlaceChecked == spacesToCheck){
+						movementDecider.add(Original);
+					}
+					lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "right", Original, tails.subList(0, tails.size()));
+					//directions.add("right");
+				}
+			}
+			if(dir != "right"){
+				nextStep.setY(
+						shape.getY());
+				nextStep.setX(shape.getX() - 16);
+				if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(shape, nextStep), this, tails)){
+					if(lastPlaceChecked > spacesToCheck){
+						lastPlaceChecked = spacesToCheck;
+						movementDecider.clear();
+						movementDecider.add(Original);
+					}
+					else if(lastPlaceChecked == spacesToCheck){
+						movementDecider.add(Original);
+					}
+					lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "left", Original, tails.subList(0, tails.size()));
+					//directions.add("left");
+				}
+			}	
+			if(dir != "up"){
+				nextStep.setY(
+						shape.getY() + 16);
+				nextStep.setX(shape.getX());
+				////System.out.println("xx" +nextStep.getX() + "yy" + nextStep.getY());
+				if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(shape, nextStep), this, tails)){
+					if(lastPlaceChecked > spacesToCheck){
+						lastPlaceChecked = spacesToCheck;
+						movementDecider.clear();
+						movementDecider.add(Original);
+					}
+					else if(lastPlaceChecked == spacesToCheck){
+						movementDecider.add(Original);
+					}
+					lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "down", Original, tails.subList(0, tails.size()));
+					////System.out.println(down);
+				}
+			}
+			if(dir != "down"){
+				nextStep.setY(
+						shape.getY() - 16);
+				nextStep.setX(shape.getX());
+				
+				if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(shape, nextStep), this, tails)){
+					if(lastPlaceChecked > spacesToCheck){
+						lastPlaceChecked = spacesToCheck;
+						movementDecider.clear();
+						movementDecider.add(Original);
+					}
+					else if(lastPlaceChecked == spacesToCheck){
+						movementDecider.add(Original);
+					}
+					lookAheadRec(spacesToCheck-1, new SmRectangle(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight()), "up", Original, tails.subList(0, tails.size()));
+					//directions.add("up");
+				}
+			}
+		}
+	}
+	
+	
+	protected Shape calcLAABB(Shape shape, Shape nextStep) {
+        return nextStep;
+    }
 	
 	
 	private void setXPosition(int amount){
 		shape.setLocation(shape.getX() + amount, shape.getY());
 	}
-	
+
 	private void setYPosition(int amount){
 		shape.setLocation(shape.getX(), shape.getY()+amount);
 	}
-	private void getMovement() {
-		List<String> directions = new ArrayList<String>();
-		////////////////////////////////DIR LEFT/////////////////////////////////////
-		if(dir == "left"){
-			nextStep.setY(
-					shape.getY()+16);
-			nextStep.setX(shape.getX());
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("down");
-			}
-			nextStep.setY(
-					shape.getY());
-			nextStep.setX(shape.getX() - 16);
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("left");
-			}
-			nextStep.setY(
-					shape.getY() - 16);
-			nextStep.setX(shape.getX());
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("up");
-			}
-			if(directions.size()!=0){
-				moveSnake(directions.get(rand.nextInt(directions.size())));
-			}
-			else{
-				//// KILL
-				movementSteps = 0;
-			}
-		}
-		/////////////////////////////////////////////DIR RIGHT///////////////////////////////
-		else if(dir == "right"){
-			nextStep.setY(
-					shape.getY());
-			nextStep.setX(shape.getX() + 16);
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("right");
-			}
-			nextStep.setY(
-					shape.getY()+ 16);
-			nextStep.setX(shape.getX());
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("down");
-			}
-			nextStep.setY(
-					shape.getY() - 16);
-			nextStep.setX(shape.getX());
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("up");
-			}
-			if(directions.size()!=0){
-				moveSnake(directions.get(rand.nextInt(directions.size())));
-			}
-			else{
-				////KILL
-				movementSteps = 0;
-			}
-		}
-		else if(dir == "up"){
-			nextStep.setY(
-					shape.getY());
-			nextStep.setX(shape.getX() + 16);
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("right");
-			}
-			nextStep.setY(
-					shape.getY());
-			nextStep.setX(shape.getX() - 16);
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("left");
-			}
-			nextStep.setY(
-					shape.getY() - 16);
-			nextStep.setX(shape.getX());
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("up");
-			}
-			if(directions.size()!=0){
-				moveSnake(directions.get(rand.nextInt(directions.size())));
-			}
-			else{
-				////KILL
-				movementSteps = 0;
-			}
-		}
-		else if(dir == "down"){
-			nextStep.setY(
-					shape.getY());
-			nextStep.setX(shape.getX() + 16);
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("right");
-			}
-			nextStep.setY(
-					shape.getY());
-			nextStep.setX(shape.getX() - 16);
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("left");
-			}
-			nextStep.setY(
-					shape.getY() + 16);
-			nextStep.setX(shape.getX());
-			if(!checkCollisions( ((MainState)game.getCurrentState()).getEntity(),  calcLAABB(), this)){
-				directions.add("down");
-			}
-			if(directions.size()!=0){
-				moveSnake(directions.get(rand.nextInt(directions.size())));
-			}
-			else{
-				////KILL
-				movementSteps = 0;
-			}
-		}
-		
-	}
 	private void moveSnake(String string) {
 		movementSteps+=1;
-		for(int i =0; i<4; i++){
+		for(int i =0; i<tail.length; i++){
 			tail[i].moveSnake(tail[i].dir);
 		}
 		if(string == "left"){
@@ -245,31 +365,53 @@ public class snake extends MoveableEntity{
 			setYPosition(-2);
 			dir = "up";
 		}
-		
+
 	}
-	@Override
-	public void render(GameContainer gc, StateBasedGame game, Graphics g) {
-		super.render(gc, game, g);
-			
-		if(animationStack.empty())
-			this.setupAnimations(game);
-		for(int i =0; i<4; i++){
-			tail[i].render(gc, game, g);
+
+	protected boolean checkCollisions(List<Entity> Entities, Shape shapeToCheck, Entity e, List<Shape> tails) {
+		collidingBlock = new Block(new SmRectangle(0,0,0,0));
+		boolean colliding = false;
+		float distance = Float.MAX_VALUE;
+		Vector2f shapeCoord = new Vector2f(shape.getCenterX(), shape.getCenterY());
+		Vector2f colCoord = new Vector2f(0, 0);
+		for(Entity b : Entities) {
+			if(b!=e && (b.name !="snake" && b.name !="pellet")){
+				if(shapeToCheck.intersects(b.getShape())) { //if it collides with the shape and if it is a validOneWayCollision
+					if(!skipOneWay) {
+						colCoord.set(b.getShape().getCenterX(), b.getShape().getCenterY());
+						if(shapeCoord.distance(colCoord) < distance) { //set collidingBlock if the distance between it and the shapeToCheck is the shortest found
+							distance = shapeCoord.distance(colCoord);
+							collidingBlock = b;
+						}
+						colliding = true;
+					} //else {
+					//if(b.getShape().getY() > collidingBlock.getShape().getY()) {
+					//	skipOneWay = false;
+					//}
+					//}
+				} 
+			}
 		}
-		//g.drawImage(((Game) game).getResourceManager().getImage("player"), shape.getX(), shape.getY());
-		g.drawAnimation(animationStack.peek(), shape.getX() - ((animationStack.peek().getWidth() - shape.getWidth())/2), shape.getY());
-		if(((Game) game).isDebug()) {
-			g.setColor(new Color(0, 125, 125, 128));
-			g.fillRect(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight());
-			g.setColor(Color.cyan);
-			g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
-			g.setColor(Color.orange);
-			g.fillRect(collidingBlock.getShape().getX(), collidingBlock.getShape().getY(), collidingBlock.getShape().getWidth(), collidingBlock.getShape().getHeight());
+		Shape c = tails.get(tails.size()-1);
+		for(Shape b : tails) {
+			//System.out.println(b.getX() + " " + b.getY());
+			//System.out.println(c.getX() + " " + c.getY());
+			if(b!= tails.get(tails.size()-1)){
+				if(shapeToCheck.intersects(b)) { //if it collides with the shape and if it is a validOneWayCollision
+					if(!skipOneWay) {
+						colCoord.set(b.getCenterX(), b.getCenterY());
+						if(shapeCoord.distance(colCoord) < distance) { //set collidingBlock if the distance between it and the shapeToCheck is the shortest found
+							distance = shapeCoord.distance(colCoord);
+							//collidingBlock = b;
+						}
+						colliding = true;
+						//System.out.println(b.getY());
+					}
+				}
+			}
 		}
+		//System.out.println(colliding);
+		return colliding;
 	}
-	@Override
-	public int getRenderPriority() {
-		 return 1000;
-	 }
 
 }

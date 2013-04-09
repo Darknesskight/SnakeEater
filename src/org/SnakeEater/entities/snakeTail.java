@@ -1,9 +1,11 @@
 package org.SnakeEater.entities;
 
+import java.util.List;
 import java.util.Stack;
 
 import org.SnakeEater.Game;
 import org.SnakeEater.geom.SmRectangle;
+import org.SnakeEater.states.MainState;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -17,15 +19,22 @@ public class snakeTail extends MoveableEntity{
 	//Stack containing the animations being used by the player. Only the top of the stack will render
     public Stack<Animation> animationStack = new Stack<Animation>();
     
+    StateBasedGame game;
+    
+    boolean newPart = false;
+    
+    int wait = 0;
+    
 	public snakeTail(Shape shape) {
 		super(shape);
 		nextStep = new SmRectangle(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
 		// TODO Auto-generated constructor stub
 		dir = "left";
-		name="";
+		name="snake";
 	}
 	public void render(GameContainer gc, StateBasedGame game, Graphics g) {
 		super.render(gc, game, g);
+		this.game = game;
 		if(animationStack.empty())
 			this.setupAnimations(game);
 		//g.drawImage(((Game) game).getResourceManager().getImage("player"), shape.getX(), shape.getY());
@@ -45,27 +54,48 @@ public class snakeTail extends MoveableEntity{
 	}
 	
 	public void moveSnake(String string) {
-		if(string == "left"){
-			setXPosition(-2);
-			dir = "left";
+		if(!newPart){	
+			if(string == "left"){
+				setXPosition(-2);
+				dir = "left";
+			}
+			else if(string == "right"){
+				setXPosition(2);
+				dir = "right";
+			}
+			else if(string == "down"){
+				setYPosition(2);
+				dir = "down";
+			}
+			else if(string == "up"){
+				setYPosition(-2);
+				dir = "up";
+			}
 		}
-		else if(string == "right"){
-			setXPosition(2);
-			dir = "right";
+		else if(wait == 7){
+			newPart=false;
 		}
-		else if(string == "down"){
-			setYPosition(2);
-			dir = "down";
-		}
-		else if(string == "up"){
-			setYPosition(-2);
-			dir = "up";
+		else{
+			wait++;
 		}
 		
+	}
+	@Override
+	protected boolean checkCollisions(List<Entity> Entities, Shape shapeToCheck, Entity e) {
+		
+		return false;		
 	}
 	
 	@Override
 	public int getRenderPriority() {
 		 return 1000;
 	 }
+	public snakeTail clone(){
+		snakeTail temp = new snakeTail(new SmRectangle(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight()));
+		temp.dir = dir; 
+		temp.newPart=true;
+		temp.animationStack = this.animationStack;
+		((MainState)game.getCurrentState()).addEntity(temp);
+		return temp;
+	}
 }

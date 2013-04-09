@@ -26,7 +26,7 @@ public class Camera {
     private int xOffset, yOffset = 0;
     
     //scale of the camera
-    private float scale = 6.0f;
+    private float scale = 3.0f;
     
     //Point of Interest, what the camera is focusing on
     private Vector2f poi;

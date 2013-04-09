@@ -171,7 +171,7 @@ public class MoveableEntity extends Entity {
         Vector2f shapeCoord = new Vector2f(shape.getCenterX(), shape.getCenterY());
         Vector2f colCoord = new Vector2f(0, 0);
         for(Entity b : Entities) {
-        	if(b!=e && (b.name != "snake" || e.name == "player")){
+        	if(b!=e && b.name!="pellet"){
         		if(shapeToCheck.intersects(b.getShape())) { //if it collides with the shape and if it is a validOneWayCollision
         			if(!skipOneWay) {
         				colCoord.set(b.getShape().getCenterX(), b.getShape().getCenterY());

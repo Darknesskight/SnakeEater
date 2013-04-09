@@ -10,6 +10,7 @@ import org.SnakeEater.entities.GameMap;
 import org.SnakeEater.entities.MapLayer;
 import org.SnakeEater.entities.Player;
 import org.SnakeEater.entities.moveableBlock;
+import org.SnakeEater.entities.pellet;
 import org.SnakeEater.entities.snake;
 import org.SnakeEater.geom.SmRectangle;
 import org.SnakeEater.util.RenderableComparator;
@@ -25,8 +26,12 @@ public class InGameState extends MainState {
 	@Override
 	public void init(GameContainer gc, StateBasedGame game)
 			throws SlickException {
-		Entities.add(new Player(new SmRectangle(40, 40, 10, 10)));
+		Entities.add(new Player(new SmRectangle(18*16+10, 18*16+10, 10, 10)));
 		Entities.add(new snake(new SmRectangle(24, 8, 16, 16)));
+		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
+		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
+		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
+		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
 		super.init(gc, game);
 	}
     @Override
