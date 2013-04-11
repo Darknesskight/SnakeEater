@@ -33,8 +33,11 @@ public class snake extends MoveableEntity{
     //StateBasedGame context
     private StateBasedGame game;
     
+    private int deathTime = 0;
+    
     boolean timeToGrow=false;
     
+    boolean dead = false;
     
   //StateBasedGame context
     private int lastPlaceChecked;
@@ -87,32 +90,47 @@ public class snake extends MoveableEntity{
 		}
 	}
 	
+	public void dead(){
+		movementSpeed=0;
+		dead = true;
+
+	}
+
 	@Override
 	public void update(GameContainer gc, StateBasedGame game, int delta) {
 		super.update(gc, game, delta);
-		if(movementSteps%8 == 0){
-			checkPellet();
-			if(movementSteps!=0){
-				for(int i =tail.length-1; i>0; i--){
-					tail[i].dir=tail[i-1].dir;
+		if(!dead){
+			checkPlayer();
+			if(movementSteps%8 == 0){
+				checkPellet();
+				if(movementSteps!=0){
+					for(int i =tail.length-1; i>0; i--){
+						tail[i].dir=tail[i-1].dir;
+					}
+					tail[0].dir = dir;
 				}
-				tail[0].dir = dir;
+				lookAhead(7, shape, dir);
+
 			}
-			lookAhead(10, shape, dir);
-			
-		}
-		else{
-			moveSnake(dir);
-		}
-		
-		if(animationStack.size() == 1) {
-			if(dir.equals("left")) animationStack.set(0, rm.getAnimation("snakeLeft"));
-			if(dir.equals("right")) animationStack.set(0, rm.getAnimation("snakeRight"));
-			if(dir.equals("up")) animationStack.set(0, rm.getAnimation("snake"));
-			if(dir.equals("down")) animationStack.set(0, rm.getAnimation("snakeFront"));
+			else{
+				moveSnake(dir);
+			}
+
+			if(animationStack.size() == 1) {
+				if(dir.equals("left")) animationStack.set(0, rm.getAnimation("snakeLeft"));
+				if(dir.equals("right")) animationStack.set(0, rm.getAnimation("snakeRight"));
+				if(dir.equals("up")) animationStack.set(0, rm.getAnimation("snake"));
+				if(dir.equals("down")) animationStack.set(0, rm.getAnimation("snakeFront"));
+			}
 		}
 	}
 
+	private void checkPlayer(){
+		if(this.shape.intersects(((MainState)game.getCurrentState()).getPlayer().shape) && ((MainState)game.getCurrentState()).getPlayer().notDead()){
+			((MainState)game.getCurrentState()).getPlayer().collidingAction(2, "");
+			timeToGrow = true;
+		}
+	}
 	private void checkPellet() {
 		for(Entity b : ((MainState)game.getCurrentState()).getEntity()) {
 			if(b.name == "pellet"){
@@ -127,27 +145,58 @@ public class snake extends MoveableEntity{
 	@Override
 	public void render(GameContainer gc, StateBasedGame game, Graphics g) {
 		super.render(gc, game, g);
-		
-		if(timeToGrow){
-			timeToGrow = false;
-			grow();
+		if(!dead){
+			if(timeToGrow){
+				timeToGrow = false;
+				grow();
+			}
+
+			if(animationStack.empty())
+				this.setupAnimations(game);
+			for(int i =0; i<tail.length; i++){
+				tail[i].render(gc, game, g);
+			}
+			//g.drawImage(((Game) game).getResourceManager().getImage("player"), shape.getX(), shape.getY());
+			g.drawAnimation(animationStack.peek(), shape.getX() - ((animationStack.peek().getWidth() - shape.getWidth())/2), shape.getY());
+			if(((Game) game).isDebug()) {
+				g.setColor(new Color(0, 125, 125, 128));
+				g.fillRect(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight());
+				g.setColor(Color.cyan);
+				g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
+				g.setColor(Color.orange);
+				g.fillRect(collidingBlock.getShape().getX(), collidingBlock.getShape().getY(), collidingBlock.getShape().getWidth(), collidingBlock.getShape().getHeight());
+			}
+		}
+		else{
+			deathSequence(gc,game,g);
+		}
+	}
+	private void deathSequence(GameContainer gc, StateBasedGame game2, Graphics g) {
+		if(deathTime<10){
+			for(int i =0; i<tail.length; i++){
+				tail[i].render(gc, game, g);
+			}
+			g.drawAnimation(animationStack.peek(), shape.getX() - ((animationStack.peek().getWidth() - shape.getWidth())/2), shape.getY());
+			deathTime++;
+		}
+		else if( deathTime<20){
+			for(int i =0; i<tail.length; i++){
+				tail[i].render(gc, game, g);
+			}
+			deathTime++;
+		}
+		else{
+			if((deathTime-20)/10 == tail.length){
+			}
+			else
+			{
+				for(int i =(deathTime-20)/10; i<tail.length; i++){
+					tail[i].render(gc, game, g);
+				}
+				deathTime++;
+			}
 		}
 		
-		if(animationStack.empty())
-			this.setupAnimations(game);
-		for(int i =0; i<tail.length; i++){
-			tail[i].render(gc, game, g);
-		}
-		//g.drawImage(((Game) game).getResourceManager().getImage("player"), shape.getX(), shape.getY());
-		g.drawAnimation(animationStack.peek(), shape.getX() - ((animationStack.peek().getWidth() - shape.getWidth())/2), shape.getY());
-		if(((Game) game).isDebug()) {
-			g.setColor(new Color(0, 125, 125, 128));
-			g.fillRect(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight());
-			g.setColor(Color.cyan);
-			g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
-			g.setColor(Color.orange);
-			g.fillRect(collidingBlock.getShape().getX(), collidingBlock.getShape().getY(), collidingBlock.getShape().getWidth(), collidingBlock.getShape().getHeight());
-		}
 	}
 	@Override
 	public int getRenderPriority() {
@@ -241,7 +290,7 @@ public class snake extends MoveableEntity{
 			}
 		}
 		if(movementDecider.size() == 0){
-				movementSteps = 0;
+				dead();
 		}
 		else{
 			//System.out.println();
@@ -256,7 +305,8 @@ public class snake extends MoveableEntity{
 			tails.add(new SmRectangle(tailOld.get(i).getX(), tailOld.get(i).getY(), 16, 16));
 		}
 		tails.add(shape);
-		tails.remove(0);
+		if(!onPellet(shape, ((MainState)game.getCurrentState()).getEntity()))
+			tails.remove(0);
 		if(spacesToCheck>0){
 			if(dir != "left"){
 				nextStep.setY(
@@ -332,6 +382,16 @@ public class snake extends MoveableEntity{
 	}
 	
 	
+	private boolean onPellet(Shape shape, List<Entity> Entities) {
+		for(Entity b : Entities) {
+			if(b.name.equals("pellet")){
+				if(b.shape.intersects(shape)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	protected Shape calcLAABB(Shape shape, Shape nextStep) {
         return nextStep;
     }
@@ -375,7 +435,7 @@ public class snake extends MoveableEntity{
 		Vector2f shapeCoord = new Vector2f(shape.getCenterX(), shape.getCenterY());
 		Vector2f colCoord = new Vector2f(0, 0);
 		for(Entity b : Entities) {
-			if(b!=e && (b.name !="snake" && b.name !="pellet")){
+			if(b!=e && (b.name !="snake" && b.name !="pellet" && b.name !="player")){
 				if(shapeToCheck.intersects(b.getShape())) { //if it collides with the shape and if it is a validOneWayCollision
 					if(!skipOneWay) {
 						colCoord.set(b.getShape().getCenterX(), b.getShape().getCenterY());

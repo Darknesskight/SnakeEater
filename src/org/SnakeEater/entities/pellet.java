@@ -37,7 +37,7 @@ public class pellet extends Entity{
 			moveToNonBlockLocation();
 			setLocation = false;
 		}
-		g.setColor(Color.cyan);
+		g.setColor(Color.yellow);
 		g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
     }
 	@Override
@@ -53,8 +53,8 @@ public class pellet extends Entity{
 		boolean placed = false;
 		int x, y;
 		while(!placed){
-			x = rand.nextInt(15)+1;
-			y = rand.nextInt(15)+1;
+			x = rand.nextInt(15)+2;
+			y = rand.nextInt(15)+2;
 			if(!checkCollisions(((MainState)game.getCurrentState()).getEntity(), new SmRectangle(x*16+8,y*16+8,16,16), this)){
 				placed = true;
 				shape.setLocation(x*16+14,y*16+14);

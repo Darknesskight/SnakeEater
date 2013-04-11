@@ -32,6 +32,10 @@ public class snakeTail extends MoveableEntity{
 		dir = "left";
 		name="snake";
 	}
+	@Override
+    public void update(GameContainer gc, StateBasedGame game, int delta) {
+		checkCollisions();
+	}
 	public void render(GameContainer gc, StateBasedGame game, Graphics g) {
 		super.render(gc, game, g);
 		this.game = game;
@@ -80,10 +84,16 @@ public class snakeTail extends MoveableEntity{
 		}
 		
 	}
-	@Override
-	protected boolean checkCollisions(List<Entity> Entities, Shape shapeToCheck, Entity e) {
-		
-		return false;		
+
+	public void dead(){
+	}
+	
+	protected boolean checkCollisions() {
+		boolean collison = false;
+		if(shape.intersects(((MainState)game.getCurrentState()).getPlayer().shape)){
+			((MainState)game.getCurrentState()).getPlayer().collidingAction(2, "");
+		}
+		return collison;
 	}
 	
 	@Override

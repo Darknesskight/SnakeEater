@@ -1,5 +1,6 @@
 package org.SnakeEater.entities;
 
+import java.util.List;
 import java.util.Stack;
 
 import org.SnakeEater.Game;
@@ -36,6 +37,8 @@ public class Player extends ControlledEntity {
     
     //boolean determining if player is currently sprinting
     private boolean sprint = false;
+    
+    private boolean dead = false;
     
     //speed of the jump
     private double jumpSpeed = DEF_JUMP_SPEED;
@@ -110,15 +113,16 @@ public class Player extends ControlledEntity {
 
     @Override
     public void render(GameContainer gc, StateBasedGame game, Graphics g) {
-        super.render(gc, game, g);
-        if(animationStack.empty())
-        	this.setupAnimations(game);
-        //g.drawImage(((Game) game).getResourceManager().getImage("player"), shape.getX(), shape.getY());
-        g.drawAnimation(animationStack.peek(), shape.getX() - ((animationStack.peek().getWidth() - shape.getWidth())/2), shape.getY());
-        if(((Game) game).isDebug()) {
-            g.setColor(new Color(0, 125, 125, 128));
-            g.fillRect(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight());
-            g.setColor(Color.cyan);
+    	super.render(gc, game, g);
+    	if(animationStack.empty())
+    		this.setupAnimations(game);
+    	//g.drawImage(((Game) game).getResourceManager().getImage("player"), shape.getX(), shape.getY());
+    	if(!dead)
+    		g.drawAnimation(animationStack.peek(), shape.getX() - ((animationStack.peek().getWidth() - shape.getWidth())/2), shape.getY());
+    	if(((Game) game).isDebug()) {
+    		g.setColor(new Color(0, 125, 125, 128));
+    		g.fillRect(nextStep.getX(), nextStep.getY(), shape.getWidth(), shape.getHeight());
+    		g.setColor(Color.cyan);
             g.fillRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
             g.setColor(Color.orange);
             g.fillRect(collidingBlock.getShape().getX(), collidingBlock.getShape().getY(), collidingBlock.getShape().getWidth(), collidingBlock.getShape().getHeight());
@@ -141,6 +145,7 @@ public class Player extends ControlledEntity {
 
     @Override
     public void keyPressed(int key, char c) {
+    	if(!dead)
         super.keyPressed(key, c);
         if(key == Input.KEY_SPACE && onGround) {
             onGround = false;
@@ -192,7 +197,13 @@ public class Player extends ControlledEntity {
     
     @Override
     public int getRenderPriority() {
-        return 1000;
+        return 900;
+    }
+    
+    @Override
+    public void collidingAction(int amount, String string){
+    	//System.out.println("DEAD");
+    	dead = true;
     }
     
     @Override
@@ -272,7 +283,40 @@ public class Player extends ControlledEntity {
         }
     }
     
+    @Override
+    protected boolean checkCollisions(List<Entity> Entities, Shape shapeToCheck, Entity e) {
+    	collidingBlock = new Block(new SmRectangle(0,0,0,0));
+        boolean colliding = false;
+        float distance = Float.MAX_VALUE;
+        Vector2f shapeCoord = new Vector2f(shape.getCenterX(), shape.getCenterY());
+        Vector2f colCoord = new Vector2f(0, 0);
+        for(Entity b : Entities) {
+        	if(b!=e && b.name!="pellet" && b.name!="snakeHead" && b.name!="snake"){
+        		if(shapeToCheck.intersects(b.getShape())) { //if it collides with the shape and if it is a validOneWayCollision
+        			if(!skipOneWay) {
+        				colCoord.set(b.getShape().getCenterX(), b.getShape().getCenterY());
+        				if(shapeCoord.distance(colCoord) < distance) { //set collidingBlock if the distance between it and the shapeToCheck is the shortest found
+        					distance = shapeCoord.distance(colCoord);
+        					collidingBlock = b;
+        				}
+        				colliding = true;
+        			} //else {
+        				//if(b.getShape().getY() > collidingBlock.getShape().getY()) {
+        				//	skipOneWay = false;
+        				//}
+        			//}
+        		} 
+        	}
+        }
+        return colliding;
+    }
+    
     private void removeNonMovementAnimations() {
         
     }
+
+	public boolean notDead() {
+		// TODO Auto-generated method stub
+		return !dead;
+	}
 }

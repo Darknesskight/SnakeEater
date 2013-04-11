@@ -28,9 +28,7 @@ public class InGameState extends MainState {
 			throws SlickException {
 		Entities.add(new Player(new SmRectangle(18*16+10, 18*16+10, 10, 10)));
 		Entities.add(new snake(new SmRectangle(24, 8, 16, 16)));
-		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
-		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
-		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
+		for(int i =0; i<6; i++)
 		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
 		super.init(gc, game);
 	}
