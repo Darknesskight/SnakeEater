@@ -54,7 +54,7 @@ public class LoadState extends BasicGameState {
 
     public void update(GameContainer gc, StateBasedGame game, int delta) throws SlickException {
         if(rm.getProgress() == 100 && gc.getTime() - time > delay) {
-            game.enterState(Game.MAIN_MENU_STATE_ID, new FadeOutTransition(), new FadeInTransition());
+            game.enterState(Game.OVERWORLD_ID, new FadeOutTransition(), new FadeInTransition());
         }
 
         if(images.hasNext()) {

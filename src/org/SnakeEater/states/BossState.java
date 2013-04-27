@@ -23,37 +23,34 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class InGameState extends MainState {
+public class BossState extends MainState {
 
-	
-	
 	@Override
 	public void init(GameContainer gc, StateBasedGame game)
 			throws SlickException {
-		Entities.add(new Player(new SmRectangle(22*8, 47*8, 10, 10)));
-		//Entities.add(new snake(new SmRectangle(24, 8, 16, 16)));
-		//for(int i =0; i<6; i++)
-		//Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
+		Entities.add(new Player(new SmRectangle(18*16+10, 18*16+10, 10, 10)));
+		Entities.add(new snake(new SmRectangle(24, 8, 16, 16)));
+		for(int i =0; i<6; i++)
+		Entities.add(new pellet(new SmRectangle(78, 78, 4, 4)));
 		super.init(gc, game);
 	}
     @Override
     public void enter(GameContainer gc, StateBasedGame game){
     	if(!previouslyLoaded){
-    		System.out.println("S");
-    	maps = new GameMap(((Game)game).getResourceManager().getMap("dungeonOne"));
-    	camera = new Camera(new Vector2f(getPlayer().getShape().getCenterX(), getPlayer().getShape().getCenterY()), maps);
-    	previouslyLoaded = true;
-    	maps.init(gc, game);
+    		maps = new GameMap(((Game)game).getResourceManager().getMap("bossTest"));
+    		camera = new Camera(new Vector2f(getPlayer().getShape().getCenterX(), getPlayer().getShape().getCenterY()), maps);
+    		previouslyLoaded = true;
+    		maps.init(gc, game);
     	}
     	maps.renderLayers();
-    	((Game) game).getRenderQueue().add(maps);
-    	for(Entity b : Entities){
-    		((Game) game).getRenderQueue().add(b);
-    	}
-    	Entities.get(0).getShape().setLocation(22*8, 47*8);
-    	
-    	camera.update(gc, game, 1);
+    	 for(Entity b : Entities)
+    	    	((Game) game).getRenderQueue().add(b);
+    	 ((Game) game).getRenderQueue().add(maps);
+    	 Entities.get(0).getShape().setLocation(17*8, 37*8);
+    	 camera.update(gc, game, 1);
     }
+    
+    
     @Override
 	public void render(GameContainer gc, StateBasedGame game, Graphics g)
 			throws SlickException {
@@ -62,7 +59,7 @@ public class InGameState extends MainState {
 	
     @Override
     public int getID() {
-        return Game.IN_GAME_STATE_ID;
+        return Game.BOSS_STATE_ID;
     }
 
 }

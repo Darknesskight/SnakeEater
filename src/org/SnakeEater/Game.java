@@ -9,9 +9,11 @@ import org.SnakeEater.attributes.Renderable;
 import org.SnakeEater.entities.GameMap;
 import org.SnakeEater.entities.Player;
 import org.SnakeEater.geom.SmRectangle;
+import org.SnakeEater.states.BossState;
 import org.SnakeEater.states.InGameState;
 import org.SnakeEater.states.LoadState;
 import org.SnakeEater.states.MainMenuState;
+import org.SnakeEater.states.Overworld;
 import org.SnakeEater.util.Config;
 import org.SnakeEater.util.ResourceManager;
 import org.newdawn.slick.AppGameContainer;
@@ -32,9 +34,9 @@ public class Game extends StateBasedGame {
     //All State IDs
     public static final int SPLASH_STATE_ID = 0;
     public static final int LOAD_STATE_ID = 1;
-    public static final int MAIN_MENU_STATE_ID = 2;
     public static final int IN_GAME_STATE_ID = 2;
-    
+    public static final int BOSS_STATE_ID = 3;
+    public static final int OVERWORLD_ID = 4;
     
     //Index of the current GameMap
     private int curGameMap = 0;
@@ -72,6 +74,8 @@ public class Game extends StateBasedGame {
         this.addState(new LoadState(this.rm));
         //this.addState(new MainMenuState());
         this.addState(new InGameState());
+        this.addState(new BossState());
+        this.addState(new Overworld());
     }
     
     /**

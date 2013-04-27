@@ -66,24 +66,15 @@
  <tileset firstgid="14" name="path" tilewidth="8" tileheight="8">
   <image source="../tilesets/path.png" width="24" height="24"/>
  </tileset>
- <tileset firstgid="23" name="specials" tilewidth="8" tileheight="8">
-  <image source="../tilesets/specials.png" width="24" height="16"/>
-  <tile id="4">
-   <properties>
-    <property name="location" value="dungeonOne"/>
-    <property name="warp" value="true"/>
-   </properties>
-  </tile>
- </tileset>
  <layer name="Collisions" width="50" height="50">
   <properties>
    <property name="collisionMask" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJzt1LEJwEAMBEElruL779NNPHgtZuBybaIZuO9ZtL/T0aKjRUeLjhYdLTpaNnWcr4+44IyOEh0tmzq2/F0dHTpadLToaNHRoqNFR4uOFh0t2zo2DNjvBfwqBI0=
+   eJztzzENADAMwLA+4095JHZklS0FQGbgvbOo3/lo8dHio8VHi48WHy0+Wny0+Gjx0eKjxUeLjxYfLT5afLT4aPHR4qNl28eGgP0um4EDhQ==
   </data>
  </layer>
- <layer name="Tile Layer 1" width="50" height="50" visible="0">
+ <layer name="Tile Layer 1" width="50" height="50">
   <data encoding="base64" compression="zlib">
    eJztwwEJAAAMBKH7/qWXY6DgqqmqqqqqqqqqqurzBwHpCcU=
   </data>
@@ -93,7 +84,7 @@
    eJzt2tEFADAQRMEjBYSQ/ltNBSEf4VgzvCp2q+C/ERIAACSbIS1J13ZIAAAAQL/u/d4PAHh1ANxlFkU=
   </data>
  </layer>
- <layer name="trees" width="50" height="50" visible="0">
+ <layer name="trees" width="50" height="50">
   <properties>
    <property name="collisionMask" value="true"/>
   </properties>

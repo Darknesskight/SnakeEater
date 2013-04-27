@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="50" height="50" tilewidth="8" tileheight="8">
+ <tileset firstgid="1" name="block" tilewidth="8" tileheight="8">
+  <image source="../tilesets/block.png" width="16" height="16"/>
+ </tileset>
+ <tileset firstgid="5" name="stone" tilewidth="8" tileheight="8">
+  <image source="../tilesets/stone.png" width="24" height="24"/>
+ </tileset>
+ <tileset firstgid="14" name="specials" tilewidth="8" tileheight="8">
+  <image source="../tilesets/specials.png" width="24" height="16"/>
+  <tile id="1">
+   <properties>
+    <property name="solid" value="true"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="location" value="overworld"/>
+    <property name="warp" value="true"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="block" value="true"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="location" value="Snake"/>
+    <property name="warp" value="true"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="height" value="9"/>
+    <property name="mask" value="true"/>
+    <property name="width" value="11"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="20" name="outOfBounds" tilewidth="8" tileheight="8">
+  <image source="../tilesets/outOfBounds.png" width="8" height="8"/>
+ </tileset>
+ <tileset firstgid="21" name="block" tilewidth="8" tileheight="8">
+  <image source="../tilesets/block.png" width="16" height="16"/>
+ </tileset>
+ <layer name="collision" width="50" height="50">
+  <properties>
+   <property name="collisionMask" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1d0KgCAMhmHvwH7u/17rwIOIVhO3lvY+MAhk2QdNUwIAAAAAAAAAAAAQIe+1lMrB39IiC8+9IYeNteyrqTNp/a7Hi3YvKYfFuy3U5LiqubLHS88zefS3HNrZf+rx0jrnI5xX0nrEv6q9O76ew8pIOaZSb+XYALeOBWQ=
+  </data>
+ </layer>
+ <layer name="stone" width="50" height="50" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJzt1b0OgCAMRlEW/3Xj/Z9VBkkMAVqTAg53OIMmNf1aiN455wEAAAAAAAAAAAB0twbbY/9BP+Qgh4UpmJWk2pgjPi+D5liTm7FU23Mv2hy5/WhySDvtncMKOezux5nQnKu05g850tqjkCm+uxr2bZmj9J0R/4/3TGuk2Y7O0WKv5PjmBinDuZA=
+  </data>
+ </layer>
+</map>

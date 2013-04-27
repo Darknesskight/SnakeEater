@@ -29,7 +29,6 @@ public class pellet extends Entity{
     public void init(GameContainer gc, StateBasedGame game) {
         super.init(gc, game);
         this.game = game;
-        ((Game) game).getRenderQueue().add(this);
     }
 	
 	public void render(GameContainer gc, StateBasedGame game, Graphics g) {

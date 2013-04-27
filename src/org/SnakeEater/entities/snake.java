@@ -61,7 +61,6 @@ public class snake extends MoveableEntity{
 	@Override
     public void init(GameContainer gc, StateBasedGame game) {
         super.init(gc, game);
-        ((Game) game).getRenderQueue().add(this);
         rm = ((Game) game).getResourceManager();
         this.game = game;
         movementSpeed = 2;
@@ -109,7 +108,7 @@ public class snake extends MoveableEntity{
 					}
 					tail[0].dir = dir;
 				}
-				lookAhead(7, shape, dir);
+				lookAhead(8, shape, dir);
 
 			}
 			else{
@@ -435,7 +434,7 @@ public class snake extends MoveableEntity{
 		Vector2f shapeCoord = new Vector2f(shape.getCenterX(), shape.getCenterY());
 		Vector2f colCoord = new Vector2f(0, 0);
 		for(Entity b : Entities) {
-			if(b!=e && (b.name !="snake" && b.name !="pellet" && b.name !="player")){
+			if(b!=e && (b.name !="snake" && b.name !="pellet" && b.name !="player" && b.name !="warp")){
 				if(shapeToCheck.intersects(b.getShape())) { //if it collides with the shape and if it is a validOneWayCollision
 					if(!skipOneWay) {
 						colCoord.set(b.getShape().getCenterX(), b.getShape().getCenterY());

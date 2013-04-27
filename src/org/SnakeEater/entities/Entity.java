@@ -20,7 +20,7 @@ public class Entity implements Renderable {
     protected Shape shape;
     
   //Slick shape used by the Entity for position and collision
-    protected String name = "";
+    public String name = "";
     /**
      * Contructs a new Entity with the given shape
      * 

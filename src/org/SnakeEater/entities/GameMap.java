@@ -23,7 +23,7 @@ import org.newdawn.slick.tiled.TiledMap;
  */
 public class GameMap implements Renderable {
 	//Camera used on the map
-    private Camera camera;
+    protected Camera camera;
     
     //TiledMap of map
     private TiledMap map;
@@ -39,6 +39,8 @@ public class GameMap implements Renderable {
     private int width;
     
     private StateBasedGame game;
+    
+    private GameContainer gc;
     
     //height of the map
     private int height;
@@ -68,6 +70,13 @@ public class GameMap implements Renderable {
         
     }
     
+    public void renderLayers(){
+    	for(MapLayer layer : layers) {
+        	
+            layer.init(gc, game);
+        }
+    }
+    
     /**
      * Goes through the tiledMap and finds all the collidable tiles and creates Blocks at those locations
      */
@@ -85,9 +94,18 @@ public class GameMap implements Renderable {
                                     map.getTileWidth(), map.getTileHeight())));
                             
                         }
-                        if(Boolean.parseBoolean(map.getTileProperty(map.getTileId(j, k, collisionLayer), "block", "false"))) {
+                        else if(Boolean.parseBoolean(map.getTileProperty(map.getTileId(j, k, collisionLayer), "block", "false"))) {
                         	((MainState) game.getCurrentState()).addEntity(new moveableBlock(new Rectangle(j * map.getTileWidth(), k * map.getTileHeight(), 
                                     16, 16)));
+                        }
+                        else if(Boolean.parseBoolean(map.getTileProperty(map.getTileId(j, k, collisionLayer), "mask", "false"))) {
+                        	((MainState) game.getCurrentState()).addEntity(new cover(new Rectangle(j * map.getTileWidth(), k * map.getTileHeight(), 
+                        			Integer.valueOf(map.getTileProperty(tileId, "width", "null"))*8, Integer.valueOf(map.getTileProperty(tileId, "height", "null"))*8)));
+                        }
+                        else if(Boolean.parseBoolean(map.getTileProperty(map.getTileId(j, k, collisionLayer), "warp", "false"))) {
+       
+                        	((MainState) game.getCurrentState()).addEntity(new warp(new Rectangle(j * map.getTileWidth(), k * map.getTileHeight(), 
+                        			8, 8), map.getTileProperty(tileId, "location", "null")));
                         }
                     }
                 }
@@ -106,12 +124,7 @@ public class GameMap implements Renderable {
         //levelMusic = ((Game) game).getResourceManager().getMusic(map.getMapProperty("levelMusic", ""));
         //playMusic();
     	this.game = game;
-        camera = new Camera(new Vector2f(((MainState)game.getCurrentState()).getPlayer().getShape().getCenterX(), ((MainState)game.getCurrentState()).getPlayer().getShape().getCenterY()), ((MainState)game.getCurrentState()).getMaps());
-        for(MapLayer layer : layers) {
-        	
-            layer.init(gc, game);
-        }
-        ((Game) game).getRenderQueue().add(this);
+    	this.gc = gc;
         locateBlocks();
     }
     
@@ -123,7 +136,6 @@ public class GameMap implements Renderable {
      * @param delta time since last update call
      */
     public void update(GameContainer gc, StateBasedGame game, int delta) {
-        camera.update(gc, game, delta);
         Input input = gc.getInput();
         if(input.isKeyPressed(Input.KEY_M)) {
             if(levelMusic.playing()) stopMusic();

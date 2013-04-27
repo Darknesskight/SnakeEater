@@ -22,26 +22,17 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="16" name="specials" tilewidth="8" tileheight="8">
-  <image source="../tilesets/specials.png" width="24" height="16"/>
-  <tile id="4">
-   <properties>
-    <property name="location" value="dungeonOne"/>
-    <property name="warp" value="true"/>
-   </properties>
-  </tile>
- </tileset>
- <layer name="Collisions" width="40" height="40" visible="0">
+ <layer name="Collisions" width="40" height="40">
   <properties>
    <property name="collisionMask" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztmaEKwDAUxJ6pntn/f+v8mBoHeYELnCg1ocT1zMxZvq3Y/K7XPX22vd82bH50b+0vi82P7q39ZbH50b21vyw2P7q39pfF5kf31v6y2Pzo3tpfFpsf3Vv7y2Lzo3trf1ksfn93fyz9t/AAOAUIFw==
+   eJzt0jEKACAQA8FrrP3/b+2tA3sLCViIzSJzZuYsP1tn67vfO323/d+22fpob/WXna2P9lZ/2dn6aG/1l52tj/ZWf9nZ+mhv9ZedrY/2Vn/Z2fpob/WXna2P9lZ/2Vn6Np8HHREHzA==
   </data>
  </layer>
- <layer name="walls" width="40" height="40">
+ <layer name="walls" width="40" height="40" visible="0">
   <data encoding="base64" compression="zlib">
-   eJztzrsNgDAQBcGL+Br6L5crwJGjhzTBpqvZqmoP7ejO7grt5uPj4+OLjI+Pj48vMz4+Pj6+zPj4+Pj4MvuDb3TPYrPn6mvW2314Wj5y
+   eJztzrERgDAMBDBXIYGE/cfFYzx3KtRrVNUVarbV7lCPn5+fn18kPz8/P79Mfn5+fn6Z/Pz8/Pwy/eG32wn1tg99vj6B
   </data>
  </layer>
  <layer name="Tile Layer 2" width="40" height="40" visible="0">

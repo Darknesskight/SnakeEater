@@ -77,7 +77,6 @@ public class Player extends ControlledEntity {
     @Override
     public void init(GameContainer gc, StateBasedGame game) {
         super.init(gc, game);
-        ((Game) game).getRenderQueue().add(this);
         rm = ((Game) game).getResourceManager();
         this.game = game;
         movementSpeed = 1;
@@ -161,7 +160,7 @@ public class Player extends ControlledEntity {
         } else if(key == Input.KEY_K) {
             destroy();
         } else if(key == Input.KEY_UP) {
-        	((MainState)game.getCurrentState()).getMaps().getCamera().moveTo(new Vector2f(shape.getCenterX(), shape.getCenterY() - 90), 2);
+        	((MainState)game.getCurrentState()).camera.moveTo(new Vector2f(shape.getCenterX(), shape.getCenterY() - 90), 2);
         }
         changeCurAnimation(key);
     }
@@ -177,7 +176,7 @@ public class Player extends ControlledEntity {
         } else if(key == Input.KEY_LSHIFT) {
             sprint = false;
         } else if(key == Input.KEY_UP) {
-        	((MainState)game.getCurrentState()).getMaps().getCamera().moveTo(new Vector2f(shape.getCenterX(), shape.getCenterY()), 2);
+        	((MainState)game.getCurrentState()).camera.moveTo(new Vector2f(shape.getCenterX(), shape.getCenterY()), 2);
         }
     }
     
@@ -286,12 +285,13 @@ public class Player extends ControlledEntity {
     @Override
     protected boolean checkCollisions(List<Entity> Entities, Shape shapeToCheck, Entity e) {
     	collidingBlock = new Block(new SmRectangle(0,0,0,0));
+    	
         boolean colliding = false;
         float distance = Float.MAX_VALUE;
         Vector2f shapeCoord = new Vector2f(shape.getCenterX(), shape.getCenterY());
         Vector2f colCoord = new Vector2f(0, 0);
         for(Entity b : Entities) {
-        	if(b!=e && b.name!="pellet" && b.name!="snakeHead" && b.name!="snake"){
+        	if(b!=e && b.name == ""){
         		if(shapeToCheck.intersects(b.getShape())) { //if it collides with the shape and if it is a validOneWayCollision
         			if(!skipOneWay) {
         				colCoord.set(b.getShape().getCenterX(), b.getShape().getCenterY());
@@ -307,7 +307,20 @@ public class Player extends ControlledEntity {
         			//}
         		} 
         	}
+        	else if(b.name.equals("cover")){
+        		//System.out.println("cover");
+        		if(shapeToCheck.intersects(b.getShape())) {
+        			b.shape.setLocation(-50, -50);
+        		}
+        	}
+        	else if(b.name.equals("warp")){
+        		if(shapeToCheck.intersects(b.getShape())) {
+        			
+        			((warp)b).moving();
+        		}
+        	}
         }
+        
         return colliding;
     }
     
